@@ -11,7 +11,7 @@ class EventsController < ActionController::Base
   end
 
   def get
-    json = {"get" => ["get1", "get2"]}
+    json = {"get" => ["events_get1", "get2"]}
     render :json => json
   end
 

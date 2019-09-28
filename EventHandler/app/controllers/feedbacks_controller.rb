@@ -11,7 +11,9 @@ class FeedbacksController < ActionController::Base
   end
 
   def get
-    json = {"get" => ["get1", "get2"]}
+    event_id = request.query_parameters[:eventId]
+    event_feedbacks = Feedback.where(eventId: event_id)
+    json = {"get" => event_feedbacks}
     render :json => json
   end
 
