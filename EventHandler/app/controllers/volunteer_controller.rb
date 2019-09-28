@@ -1,12 +1,23 @@
 class VolunteerController < ActionController::Base
   skip_before_action :verify_authenticity_token
   def create
-    json = {"create" => ["create1", "create2"]}
+    event_id = request.query_parameters[:eventId]
+    user_id = request.params[:userId]
+    new_volunteer_registration = VolunteerRegistration.create(eventId: event_id, userId: user_id, status: "registered", createdTime: DateTime.now, updatedTime: DateTime.now)
+    json = {"event id: " => new_volunteer_registration.eventId,
+            "user id: " => new_volunteer_registration.userId,
+            "event_status: " => new_volunteer_registration.status}
     render :json => json
   end
 
   def delete
-    json = {"delete" => ["delete1", "delete2"]}
+    event_id = request.query_parameters[:eventId]
+    user_id = request.params[:userId]
+    users = VolunteerRegistration.where(eventId: event_id, userId: user_id)
+    register_id = users.first.id
+    user = VolunteerRegistration.find(register_id)
+    user.update(status: 'withdrawed')
+    json = {"result: " => "Volunteer withdraw from event"}
     render :json => json
   end
 
