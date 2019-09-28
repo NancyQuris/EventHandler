@@ -1,13 +1,25 @@
 class CategoriesController < ActionController::Base
   skip_before_action :verify_authenticity_token
+  
   def create
-    json = {"create" => ["create1", "create2"]}
+    category = request.params[:category]
+    new_category = Category.create(categoryName: category, 
+      createdTime: DateTime.now, updatedTime: DateTime.now)
+    json = {"categoryId" => new_category.id, 
+            "category" => category}
     render :json => json
   end
 
   def delete
-    json = {"delete" => ["delete1", "delete2"]}
-    render :json => json
+    category_id = request.query_parameters[:categoryId]
+    begin
+      category = Category.find(category_id)
+      category.destroy
+      json = {"result" => "Category deleted"}
+      render :json => json
+    rescue ActiveRecord::RecordNotFound => exception
+      render :status => :internal_server_error
+    end
   end
 
   def get
