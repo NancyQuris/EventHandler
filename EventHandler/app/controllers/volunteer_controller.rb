@@ -3,22 +3,46 @@ class VolunteerController < ActionController::Base
   def create
     event_id = request.query_parameters[:eventId]
     user_id = request.params[:userId]
-    new_volunteer_registration = VolunteerRegistration.create(eventId: event_id, userId: user_id, status: "registered", createdTime: DateTime.now, updatedTime: DateTime.now)
-    json = {"event id: " => new_volunteer_registration.eventId,
-            "user id: " => new_volunteer_registration.userId,
-            "event_status: " => new_volunteer_registration.status}
-    render :json => json
+    if event_id.present?
+      if user_id.present?
+        if Event.exists?(id: event_id)
+          new_volunteer_registration = VolunteerRegistration.create(eventId: event_id, userId: user_id, status: "registered", createdTime: DateTime.now, updatedTime: DateTime.now)
+          json = {"event id: " => new_volunteer_registration.eventId,
+                  "user id: " => new_volunteer_registration.userId,
+                  "event_status: " => new_volunteer_registration.status}
+          render :json => json
+        else 
+          head 500  
+        end
+      else 
+        head 400
+      end
+    else 
+      head 400
+    end
   end
 
   def delete
     event_id = request.query_parameters[:eventId]
     user_id = request.params[:userId]
-    users = VolunteerRegistration.where(eventId: event_id, userId: user_id)
-    register_id = users.first.id
-    user = VolunteerRegistration.find(register_id)
-    user.update(status: 'withdrawed')
-    json = {"result: " => "Volunteer withdraw from event"}
-    render :json => json
+    if event_id.present?
+      if user_id.present?
+        users = VolunteerRegistration.where(eventId: event_id, userId: user_id)
+        if users.empty?
+          head 500
+        else   
+          register_id = users.first.id
+          user = VolunteerRegistration.find(register_id)
+          user.update(status: 'withdrawed')
+          json = {"result: " => "Volunteer withdraw from event"}
+          render :json => json
+        end
+      else 
+        head 400
+      end
+    else 
+      head 400
+    end
   end
 
   def get
