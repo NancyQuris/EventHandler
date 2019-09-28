@@ -1,4 +1,5 @@
 class FeedbacksController < ActionController::Base
+  skip_before_action :verify_authenticity_token
   def create
     json = {"create" => ["create1", "create2"]}
     render :json => json
