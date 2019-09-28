@@ -10,12 +10,14 @@ class EventsController < ActionController::Base
                                 maxParticipants: params[:maxParticipants],
                                 minParticipants: params[:minParticipants],
                                 eventStatus: params[:eventStatus])
+    # cate = Category.find(params[:categoryId])
+    event_cate = EventCategory.create(categoryId: params[:categoryId], eventId: new_event.id)
     json = {
               "eventId" => new_event.id,
               "eventName" => new_event.eventName,
               "startDateTime" => new_event.startDateTime,
               "organizerName" => new_event.organizerName,
-              "categoryId" => params[:categoryId],
+              "categoryId" => event_cate.categoryId,
               "description" => new_event.description,
               "maxParticipants" => new_event.maxParticipants,
               "minParticipants" => new_event.minParticipants,
@@ -27,8 +29,8 @@ class EventsController < ActionController::Base
 
   def delete
     event_id = request.query_parameters[:eventId]
-    Event.find(event_id).destroy
-    json = {"result" => "Event Deleted"} #{"id" => request.query_parameters["eventId"]}
+    Event.find_by(id: event_id).destroy
+    json = {"result" => event_id}
     render :json => json
   end
 
