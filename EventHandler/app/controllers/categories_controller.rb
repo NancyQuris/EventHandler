@@ -20,9 +20,7 @@ class CategoriesController < ActionController::Base
       json = {"result" => "Category deleted"}
       render :json => json
     else 
-      # TO-DO: change to HTTP status code
-      json = {"result" => "error"}
-      render :json => json
+      head 500
     end 
   end
 
@@ -47,9 +45,7 @@ class CategoriesController < ActionController::Base
         "category" => category_name}
       render :json => json
     else
-      # TO-DO: change to HTTP status code
-      json = {"result" => "error"}
-      render :json => json
+      head 500
     end
   end
 
