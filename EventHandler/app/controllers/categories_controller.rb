@@ -1,6 +1,8 @@
 class CategoriesController < ActionController::Base
   skip_before_action :verify_authenticity_token
   
+  #TO-DO: ensure distinction of category name 
+
   def create
     category = request.params[:category]
     new_category = Category.create(categoryName: category, 
@@ -12,24 +14,43 @@ class CategoriesController < ActionController::Base
 
   def delete
     category_id = request.query_parameters[:categoryId]
-    begin
+    if Category.exists?(category_id)
       category = Category.find(category_id)
       category.destroy
       json = {"result" => "Category deleted"}
       render :json => json
-    rescue ActiveRecord::RecordNotFound => exception
-      render :status => :internal_server_error
-    end
+    else 
+      # TO-DO: change to HTTP status code
+      json = {"result" => "error"}
+      render :json => json
+    end 
   end
 
   def get
-    json = {"get" => ["get1", "get2"]}
+    categories = Category.all()
+    all_categroies = []
+    categories.each do |category|
+      all_categroies.push({"categoryId" => category.id, "category" => category.categoryName}) 
+    end 
+    json = {"categories" => all_categroies}
     render :json => json
   end
 
   def update
-    json = {"update" => ["update1", "update2"]}
-    render :json => json
+    category_id = request.query_parameters[:categoryId]
+    category_name = request.params[:category]
+    if Category.exists?(category_id)
+      category = Category.find(category_id)
+      category.categoryName = category_name
+      category.updatedTime = DateTime.now
+      json = {"categoryId" => category.id, 
+        "category" => category_name}
+      render :json => json
+    else
+      # TO-DO: change to HTTP status code
+      json = {"result" => "error"}
+      render :json => json
+    end
   end
 
 end
