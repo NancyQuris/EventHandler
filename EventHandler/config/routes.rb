@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   post "/events", to: "events#create"
   delete "/events", to: "events#delete"
   get "/events", to: "events#get"
+  get "/events/:from_time/:to_time", to: "events#get_by_from_and_to_time"
   put "/events", to: "events#update"
 
   post "/categories", to: "categories#create"

@@ -111,10 +111,11 @@ class EventsController < ActionController::Base
 
       if update
         event.updatedTime = DateTime.now
+      end
 
       json = {"eventId" => event_id,
         "eventName" => event.eventName,
-        "startDateName" => event.startDateName,
+        "startDateTime" => event.startDateTime,
         "endDateTime" => event.endDateTime,
         "organizerName" => event.organizerName,
         "categoryId" => event.categoryId,
@@ -150,6 +151,13 @@ class EventsController < ActionController::Base
 
   def get_by_cate()
     # to be done
+  end
+
+  def get_by_from_and_to_time
+    from_time = params[:from_time]
+    to_time = params[:to_time]
+    events = Event.where(startDateTime: from_time..to_time)
+    render :json => {"events" => events}
   end
 
   def all_events()
