@@ -3,26 +3,34 @@ class CategoriesController < ActionController::Base
 
   def create
     category = request.params[:category]
-    if Category.exists?(categoryName: category)
-      head 400 #bad request, the category name has been occupied
+    if category.present?
+      if Category.exists?(categoryName: category)
+        head 400 #bad request, the category name has been occupied
+      else
+        new_category = Category.create(categoryName: category, 
+          createdTime: DateTime.now, updatedTime: DateTime.now)
+        json = {"categoryId" => new_category.id, 
+                "category" => category}
+        render :json => json
+      end 
     else
-      new_category = Category.create(categoryName: category, 
-        createdTime: DateTime.now, updatedTime: DateTime.now)
-      json = {"categoryId" => new_category.id, 
-              "category" => category}
-      render :json => json
-    end 
+      head 400
+    end    
   end
 
   def delete
     category_id = request.query_parameters[:categoryId]
-    if Category.exists?(category_id)
-      category = Category.find(category_id)
-      category.destroy
-      json = {"result" => "Category deleted"}
-      render :json => json
-    else 
-      head 500
+    if category_id.present?
+      if Category.exists?(category_id)
+        category = Category.find(category_id)
+        category.destroy
+        json = {"result" => "Category deleted"}
+        render :json => json
+      else 
+        head 500
+      end 
+    else
+      head 400
     end 
   end
 
@@ -39,19 +47,23 @@ class CategoriesController < ActionController::Base
   def update
     category_id = request.query_parameters[:categoryId]
     category_name = request.params[:category]
-    if Category.exists?(category_id)
-      if Category.exists?(categoryName: category_name)
-        head 400 #bad request, the category name has been occupied
+    if category_id.present? && category_name.present?
+      if Category.exists?(category_id)
+        if Category.exists?(categoryName: category_name)
+          head 400 #bad request, the category name has been occupied
+        else
+          category = Category.find(category_id)
+          category.categoryName = category_name
+          category.updatedTime = DateTime.now
+          json = {"categoryId" => category.id, 
+            "category" => category_name}
+          render :json => json
+        end
       else
-        category = Category.find(category_id)
-        category.categoryName = category_name
-        category.updatedTime = DateTime.now
-        json = {"categoryId" => category.id, 
-          "category" => category_name}
-        render :json => json
+        head 500
       end
     else
-      head 500
+      head 400
     end
   end
 
