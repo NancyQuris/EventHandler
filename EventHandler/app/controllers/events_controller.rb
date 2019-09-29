@@ -41,9 +41,9 @@ class EventsController < ActionController::Base
     if (id)
       render :json => get_by_id()
     elsif (search)
-      render :json => get_by_search()
+      render :json => {"events" => get_by_search()}
     elsif (cate)
-      render :json => get_by_cate()
+      render :json => {"events" => get_by_cate()}
     else
       render :json => {"events" => all_events()}
     end
@@ -111,10 +111,11 @@ class EventsController < ActionController::Base
 
       if update
         event.updatedTime = DateTime.now
+      end
 
       json = {"eventId" => event_id,
         "eventName" => event.eventName,
-        "startDateName" => event.startDateName,
+        "startDateTime" => event.startDateTime,
         "endDateTime" => event.endDateTime,
         "organizerName" => event.organizerName,
         "categoryId" => event.categoryId,
@@ -145,15 +146,37 @@ class EventsController < ActionController::Base
   end
 
   def get_by_search()
-    return Event.where("eventName LIKE ?", "%#{request.query_parameters[:search]}%")
+    events = Event.where("eventName LIKE ?", "%#{request.query_parameters[:search]}%")
+    events.each do |event|
+      event.numOfParticipants = count_num_of_participants(event.id)
+    return events
   end
 
   def get_by_cate()
-    # to be done
+    category_id = request.query_parameters[:categoryId]
+    events = Event.where(categoryId: category_id)
+    events.each do |event|
+      event.numOfParticipants = count_num_of_participants(event.id)
+    return events
+  end
+
+  def get_by_from_and_to_time
+    from_time = params[:from_time]
+    to_time = params[:to_time]
+    events = Event.where(startDateTime: from_time..to_time)
+    events.each do |event|
+      event.numOfParticipants = count_num_of_participants(event.id)
+    end
+    render :json => {"events" => events}
   end
 
   def all_events()
     return Event.all
+  end
+
+  def count_num_of_participants(event_id)
+    participants = VolunteerRegistration.where(eventId: event_id, status: "registered").or(VolunteerRegistration.where(eventId: event_id, status: "attended"))
+    participants.size
   end
 
 end
