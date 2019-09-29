@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # modify volunteer from event
   post "/events/volunteer", to: "volunteer#create"
   delete "/events/volunteer", to: "volunteer#delete"
+  put "/events/volunteer", to: "volunteer#update"
   
   # modify feedback
   post "/events/feedbacks", to: "feedbacks#create"

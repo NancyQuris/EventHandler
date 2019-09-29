@@ -51,8 +51,26 @@ class VolunteerController < ActionController::Base
   end
 
   def update
-    json = {"update" => ["update1", "update2"]}
-    render :json => json
+    event_id = request.query_parameters[:eventId]
+    user_id = request.params[:userId]
+    if event_id.present?
+      if user_id.present?
+        users = VolunteerRegistration.where(eventId: event_id, userId: user_id)
+        if users.empty?
+          head 500
+        else   
+          register_id = users.first.id
+          user = VolunteerRegistration.find(register_id)
+          user.update(status: 'attended')
+          json = {"result: " => "Volunteer attend event"}
+          render :json => json
+        end
+      else 
+        head 400
+      end
+    else 
+      head 400
+    end
   end
 
 end
