@@ -5,7 +5,7 @@ class CategoriesController < ActionController::Base
     category = request.params[:category]
     if category.present?
       if Category.exists?(categoryName: category)
-        head 400 #bad request, the category name has been occupied
+        head 500
       else
         new_category = Category.create(categoryName: category, 
           createdTime: DateTime.now, updatedTime: DateTime.now)
@@ -50,7 +50,7 @@ class CategoriesController < ActionController::Base
     if category_id.present? && category_name.present?
       if Category.exists?(category_id)
         if Category.exists?(categoryName: category_name)
-          head 400 #bad request, the category name has been occupied
+          head 500 #bad request, the category name has been occupied
         else
           category = Category.find(category_id)
           category.categoryName = category_name
