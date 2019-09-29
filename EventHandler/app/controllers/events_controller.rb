@@ -149,6 +149,7 @@ class EventsController < ActionController::Base
     events = Event.where("eventName LIKE ?", "%#{request.query_parameters[:search]}%")
     events.each do |event|
       event.numOfParticipants = count_num_of_participants(event.id)
+    end
     return events
   end
 
@@ -157,6 +158,7 @@ class EventsController < ActionController::Base
     events = Event.where(categoryId: category_id)
     events.each do |event|
       event.numOfParticipants = count_num_of_participants(event.id)
+    end
     return events
   end
 
