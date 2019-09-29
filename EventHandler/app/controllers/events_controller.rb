@@ -125,7 +125,7 @@ class EventsController < ActionController::Base
         "eventStatus" => event.eventStatus}
       render :json => json
     else 
-    end    
+    end
   end
 
   def get_by_id()
