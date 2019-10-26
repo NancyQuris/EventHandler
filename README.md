@@ -7,8 +7,9 @@ developed in Citi Hackthon 2019, as a event handler of a volunteer management sy
 Kuok Jia Hui, Liu Yiyang, Liu Yingnan , Zhang Jingchen, Zhu Tongyao
 
 #### Function supported:
-##### event management
-create new event <br/>
+
+create new event
+
 retrieve event based on
 * category
 * event take place time
